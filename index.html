@@ -368,6 +368,29 @@ document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',()=>{
 }));
 function sel(b){const c=b.parentElement.querySelector('code');const r=document.createRange();r.selectNodeContents(c);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Press Ctrl+C'}
 </script>
+<!-- COUNT-UP ANIMATION FOR NUMBERS -->
+<style>.reel-stats b,.score-row b,.stat b{font-variant-numeric:tabular-nums}</style>
+<script>
+(function(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const els=[...document.querySelectorAll('[data-n]')].filter(el=>/\d/.test(el.textContent));
+  const run=el=>{
+    const target=parseInt(el.textContent.replace(/[^\d]/g,''),10);if(!target)return;
+    const dur=1600,t0=performance.now();
+    const step=now=>{
+      const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);
+      el.textContent=Math.round(target*e).toLocaleString('en-US');
+      if(p<1)requestAnimationFrame(step);else el.textContent=target.toLocaleString('en-US');
+    };
+    requestAnimationFrame(step);
+  };
+  if(!('IntersectionObserver' in window))return;
+  const io=new IntersectionObserver(entries=>entries.forEach(en=>{
+    if(en.isIntersecting){run(en.target);io.unobserve(en.target)}
+  }),{threshold:.6});
+  els.forEach(el=>io.observe(el));
+})();
+</script>
 
 </body>
 </html>
